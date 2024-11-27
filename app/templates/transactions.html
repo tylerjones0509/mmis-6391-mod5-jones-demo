@@ -2,10 +2,13 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1>Transactions</h1>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
-        Add New Transaction
-    </button>
+<h1>Transactions</h1>
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+    Add New Transaction
+</button>
+
+<h3 style="color: red;">Total Portfolio Value is ${{ "{:,.2f}".format(total_portfolio_value) }}</h3>
+
 
     <!-- Table displaying all transactions -->
     <table class="table table-striped mt-4">
@@ -15,8 +18,9 @@
                 <th>Transaction Date</th>
                 <th>Quantity</th>
                 <th>Price Paid</th>
-                <th>Ticker ID</th>
-                <th>Account ID</th>
+                <th>Ticker Symbol</th>
+                <th>Total Cost</th>
+                <th>Account Name</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -27,8 +31,9 @@
                 <td>{{ transaction.transaction_date }}</td>
                 <td>{{ transaction.quantity }}</td>
                 <td>{{ transaction.price_paid }}</td>
-                <td>{{ transaction.ticker_id }}</td>
-                <td>{{ transaction.account_id }}</td>
+                <td>{{ transaction.ticker_symbol }}</td>
+           <td>${{ "%.3f" | format(transaction.total_cost) }}</td>
+                <td>{{ transaction.account_name }}</td>
                 <td>
                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editTransactionModal{{ transaction.transaction_id }}">
                         Edit
@@ -62,12 +67,20 @@
                                     <input type="text" class="form-control" name="price_paid" value="{{ transaction.price_paid }}" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="tickerId" class="form-label">Ticker ID</label>
-                                    <input type="text" class="form-control" name="ticker_id" value="{{ transaction.ticker_id }}" required>
+                                    <label for="tickerId" class="form-label">Ticker Symbol</label>
+                                    <select class="form-select" name="ticker_id" required>
+                                        {% for ticker in all_tickers %}
+                                        <option value="{{ ticker.ticker_id }}" {% if ticker.ticker_id == transaction.ticker_id %}selected{% endif %}>{{ ticker.ticker_symbol }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="accountId" class="form-label">Account ID</label>
-                                    <input type="text" class="form-control" name="account_id" value="{{ transaction.account_id }}" required>
+                                    <label for="accountId" class="form-label">Account Name</label>
+                                    <select class="form-select" name="account_id" required>
+                                        {% for account in all_accounts %}
+                                        <option value="{{ account.account_id }}" {% if account.account_id == transaction.account_id %}selected{% endif %}>{{ account.account_name }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -127,12 +140,20 @@
                         <input type="text" class="form-control" name="price_paid" required>
                     </div>
                     <div class="mb-3">
-                        <label for="tickerId" class="form-label">Ticker ID</label>
-                        <input type="text" class="form-control" name="ticker_id" required>
+                        <label for="tickerId" class="form-label">Ticker Symbol</label>
+                        <select class="form-select" name="ticker_id" required>
+                            {% for ticker in all_tickers %}
+                            <option value="{{ ticker.ticker_id }}">{{ ticker.ticker_symbol }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="mb-3">
-                        <label for="accountId" class="form-label">Account ID</label>
-                        <input type="text" class="form-control" name="account_id" required>
+                        <label for="accountId" class="form-label">Account Name</label>
+                        <select class="form-select" name="account_id" required>
+                            {% for account in all_accounts %}
+                            <option value="{{ account.account_id }}">{{ account.account_name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
